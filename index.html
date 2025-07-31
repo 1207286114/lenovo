@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联想笔记本SFA销售管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .module-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .module-card {
+            transition: all 0.3s ease;
+        }
+        .tab-active {
+            background: linear-gradient(135deg, #e60012, #ff6b35);
+            color: white;
+        }
+        .lenovo-gradient {
+            background: linear-gradient(135deg, #e60012, #ff6b35);
+        }
+        .chat-message {
+            animation: slideInUp 0.3s ease-out;
+        }
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .config-option:hover {
+            background-color: #f3f4f6;
+        }
+        .pricing-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- 顶部导航 -->
+    <header class="lenovo-gradient text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-laptop text-2xl"></i>
+                <div>
+                    <h1 class="text-lg font-bold">联想SFA系统</h1>
+                    <p class="text-xs opacity-90">销售管理平台</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-bell text-xl cursor-pointer" onclick="showNotifications()"></i>
+                <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="pb-20">
+        <!-- 首页仪表盘 -->
+        <div id="dashboard" class="p-4">
+            <!-- 快捷统计卡片 -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">今日签到</p>
+                            <p class="text-2xl font-bold text-green-600">08:30</p>
+                        </div>
+                        <i class="fas fa-clock text-green-500 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">今日拜访</p>
+                            <p class="text-2xl font-bold text-blue-600">3/5</p>
+                        </div>
+                        <i class="fas fa-users text-blue-500 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">本月报价</p>
+                            <p class="text-2xl font-bold text-purple-600">28</p>
+                        </div>
+                        <i class="fas fa-file-invoice-dollar text-purple-500 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">活跃客户</p>
+                            <p class="text-2xl font-bold text-orange-600">156</p>
+                        </div>
+                        <i class="fas fa-chart-line text-orange-500 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能模块入口 -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="module-card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="switchTab('checkin')">
+                    <div class="text-center">
+                        <i class="fas fa-clock text-4xl text-green-500 mb-3"></i>
+                        <h3 class="font-bold text-gray-800 mb-1">销售打卡</h3>
+                        <p class="text-sm text-gray-500">考勤管理</p>
+                    </div>
+                </div>
+                <div class="module-card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="switchTab('users')">
+                    <div class="text-center">
+                        <i class="fas fa-users text-4xl text-blue-500 mb-3"></i>
+                        <h3 class="font-bold text-gray-800 mb-1">用户管理</h3>
+                        <p class="text-sm text-gray-500">客户与门店</p>
+                    </div>
+                </div>
+                <div class="module-card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="switchTab('visits')">
+                    <div class="text-center">
+                        <i class="fas fa-map-marker-alt text-4xl text-purple-500 mb-3"></i>
+                        <h3 class="font-bold text-gray-800 mb-1">客户拜访</h3>
+                        <p class="text-sm text-gray-500">拜访计划</p>
+                    </div>
+                </div>
+                <div class="module-card bg-white p-6 rounded-xl shadow-md cursor-pointer" onclick="switchTab('config')">
+                    <div class="text-center">
+                        <i class="fas fa-cogs text-4xl text-orange-500 mb-3"></i>
+                        <h3 class="font-bold text-gray-800 mb-1">产品配置</h3>
+                        <p class="text-sm text-gray-500">配置报价</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 近期动态 -->
+            <div class="mt-6 bg-white rounded-xl shadow-md p-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-bell text-blue-500 mr-2"></i>
+                    近期动态
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-800">ThinkPad X1 Carbon报价已通过审批</p>
+                            <p class="text-xs text-gray-500">2小时前</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-800">新增北京朝阳门店拜访记录</p>
+                            <p class="text-xs text-gray-500">5小时前</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-800">Legion游戏本促销活动已启动</p>
+                            <p class="text-xs text-gray-500">1天前</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 销售打卡模块 -->
+        <div id="checkin-content" class="hidden p-4">
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-clock text-green-500 mr-2"></i>
+                    今日打卡
+                </h3>
+                <div class="text-center py-6">
+                    <div class="text-6xl font-bold text-green-600 mb-2" id="current-time">08:30:45</div>
+                    <p class="text-gray-500 mb-4">2024年3月15日 星期五</p>
+                    <div class="flex justify-center space-x-4">
+                        <button class="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center space-x-2 hover:bg-green-600" onclick="checkIn()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>签到</span>
+                        </button>
+                        <button class="bg-red-500 text-white px-6 py-3 rounded-lg flex items-center space-x-2 hover:bg-red-600" onclick="checkOut()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>签退</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 拍照打卡 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-camera text-blue-500 mr-2"></i>
+                    拍照打卡
+                </h3>
+                <div class="text-center">
+                    <div class="w-40 h-40 mx-auto bg-gray-100 rounded-lg flex items-center justify-center mb-4 cursor-pointer" onclick="takePicture()">
+                        <i class="fas fa-camera text-4xl text-gray-400"></i>
+                    </div>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" onclick="takePicture()">
+                        拍摄照片
+                    </button>
+                </div>
+            </div>
+
+            <!-- 位置信息 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-map-marker-alt text-purple-500 mr-2"></i>
+                    当前位置
+                </h3>
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-location-arrow text-purple-500"></i>
+                    <div class="flex-1">
+                        <p class="font-semibold">北京市朝阳区建国门外大街</p>
+                        <p class="text-sm text-gray-500">联想总部大厦</p>
+                    </div>
+                    <button class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm" onclick="refreshLocation()">
+                        刷新
+                    </button>
+                </div>
+            </div>
+
+            <!-- 考勤记录 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-history text-orange-500 mr-2"></i>
+                    近期考勤
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="font-semibold text-sm">3月14日</p>
+                                <p class="text-xs text-gray-500">签到 08:25 | 签退 18:30</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-check-circle text-green-500"></i>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <div>
+                                <p class="font-semibold text-sm">3月13日</p>
+                                <p class="text-xs text-gray-500">签到 08:30 | 签退 18:45</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-check-circle text-green-500"></i>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div>
+                                <p class="font-semibold text-sm">3月12日</p>
+                                <p class="text-xs text-gray-500">请假 | 病假</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-exclamation-circle text-yellow-500"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 请假申请 -->
+            <div class="bg-white rounded-xl shadow-md p-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-calendar-times text-red-500 mr-2"></i>
+                    请假申请
+                </h3>
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">请假类型</label>
+                        <select class="w-full p-3 border border-gray-300 rounded-lg">
+                            <option>病假</option>
+                            <option>事假</option>
+                            <option>年假</option>
+                            <option>调休</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">开始日期</label>
+                            <input type="date" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">结束日期</label>
+                            <input type="date" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">请假原因</label>
+                        <textarea class="w-full p-3 border border-gray-300 rounded-lg h-20" placeholder="请输入请假原因"></textarea>
+                    </div>
+                    <button class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+                        提交申请
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 用户管理模块 -->
+        <div id="users-content" class="hidden p-4">
+            <!-- 功能切换标签 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <div class="flex space-x-2">
+                    <button class="user-tab tab-active px-4 py-2 rounded-lg text-sm font-medium" data-tab="dealers" onclick="switchUserTab('dealers')">
+                        经销商管理
+                    </button>
+                    <button class="user-tab px-4 py-2 rounded-lg text-sm font-medium bg-gray-100" data-tab="stores" onclick="switchUserTab('stores')">
+                        门店管理
+                    </button>
+                    <button class="user-tab px-4 py-2 rounded-lg text-sm font-medium bg-gray-100" data-tab="customer360" onclick="switchUserTab('customer360')">
+                        客户360
+                    </button>
+                </div>
+            </div>
+
+            <!-- 经销商管理 -->
+            <div id="dealers-tab" class="user-tab-content">
+                <!-- 搜索和筛选 -->
+                <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                    <div class="flex space-x-3 mb-3">
+                        <input type="text" placeholder="搜索经销商..." class="flex-1 p-3 border border-gray-300 rounded-lg">
+                        <button class="bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="view-mode-btn bg-blue-500 text-white px-3 py-2 rounded-lg text-sm" data-mode="list" onclick="switchViewMode('list')">
+                            <i class="fas fa-list"></i> 列表
+                        </button>
+                        <button class="view-mode-btn bg-gray-100 px-3 py-2 rounded-lg text-sm" data-mode="filter" onclick="switchViewMode('filter')">
+                            <i class="fas fa-filter"></i> 筛选
+                        </button>
+                        <button class="view-mode-btn bg-gray-100 px-3 py-2 rounded-lg text-sm" data-mode="map" onclick="switchViewMode('map')">
+                            <i class="fas fa-map"></i> 地图
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 经销商列表 -->
+                <div id="dealers-list" class="space-y-3">
+                    <div class="bg-white rounded-xl shadow-md p-4 cursor-pointer hover:bg-gray-50" onclick="showDealerDetail('dealer1')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-building text-blue-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">北京联想授权经销商</h4>
+                                    <p class="text-sm text-gray-500">北京市朝阳区 | 等级：金牌</p>
+                                    <p class="text-xs text-green-600">月销售额：¥2,580,000</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-4 cursor-pointer hover:bg-gray-50" onclick="showDealerDetail('dealer2')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-building text-green-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">上海ThinkPad专营店</h4>
+                                    <p class="text-sm text-gray-500">上海市浦东新区 | 等级：银牌</p>
+                                    <p class="text-xs text-green-600">月销售额：¥1,890,000</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-4 cursor-pointer hover:bg-gray-50" onclick="showDealerDetail('dealer3')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-building text-purple-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">深圳Legion游戏本专卖店</h4>
+                                    <p class="text-sm text-gray-500">深圳市南山区 | 等级：金牌</p>
+                                    <p class="text-xs text-green-600">月销售额：¥3,120,000</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 门店管理 -->
+            <div id="stores-tab" class="user-tab-content hidden">
+                <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800">门店列表</h3>
+                        <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600" onclick="addNewStore()">
+                            <i class="fas fa-plus mr-1"></i>新增门店
+                        </button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="p-3 border border-gray-200 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold">中关村联想专卖店</h4>
+                                    <p class="text-sm text-gray-500">北京市海淀区中关村大街1号</p>
+                                    <div class="flex items-center space-x-4 mt-1">
+                                        <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">营业中</span>
+                                        <span class="text-xs text-gray-500">店长：张经理</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-semibold text-green-600">本月销售</p>
+                                    <p class="text-lg font-bold text-green-600">¥485K</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 border border-gray-200 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold">王府井ThinkPad体验店</h4>
+                                    <p class="text-sm text-gray-500">北京市东城区王府井大街138号</p>
+                                    <div class="flex items-center space-x-4 mt-1">
+                                        <span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded">待审核</span>
+                                        <span class="text-xs text-gray-500">店长：李经理</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-semibold text-green-600">本月销售</p>
+                                    <p class="text-lg font-bold text-green-600">¥356K</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 客户360 -->
+            <div id="customer360-tab" class="user-tab-content hidden">
+                <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                    <h3 class="font-bold text-gray-800 mb-4">客户360全景视图</h3>
+                    
+                    <!-- 客户基本信息 -->
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold">北京科技大学</h4>
+                                <p class="opacity-90">教育行业 | VIP客户</p>
+                                <p class="text-sm opacity-75">合作时间：2019年至今</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 销售数据图表 -->
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">销售趋势</h4>
+                        <div style="height: 250px;">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 历史拜访记录 -->
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">历史拜访记录</h4>
+                        <div class="space-y-3">
+                            <div class="border-l-4 border-blue-500 pl-4 py-2">
+                                <p class="font-semibold text-sm">产品演示会议</p>
+                                <p class="text-xs text-gray-500">2024-03-10 | 参与人员：采购部主任、IT部经理</p>
+                                <p class="text-xs text-gray-600">演示了ThinkPad X1 Carbon新款，客户对性能表示满意</p>
+                            </div>
+                            <div class="border-l-4 border-green-500 pl-4 py-2">
+                                <p class="font-semibold text-sm">合同签约</p>
+                                <p class="text-xs text-gray-500">2024-02-28 | 签约金额：¥2,800,000</p>
+                                <p class="text-xs text-gray-600">签署年度采购合同，预计交付500台ThinkPad设备</p>
+                            </div>
+                            <div class="border-l-4 border-purple-500 pl-4 py-2">
+                                <p class="font-semibold text-sm">需求调研</p>
+                                <p class="text-xs text-gray-500">2024-02-15 | 调研新学期设备需求</p>
+                                <p class="text-xs text-gray-600">了解到需要升级实验室设备，重点关注Legion系列</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SKU上架情况 -->
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">产品偏好分析</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                <i class="fas fa-laptop text-blue-500 text-2xl mb-2"></i>
+                                <p class="text-sm font-semibold">ThinkPad</p>
+                                <p class="text-xs text-gray-500">65%</p>
+                            </div>
+                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                <i class="fas fa-gamepad text-red-500 text-2xl mb-2"></i>
+                                <p class="text-sm font-semibold">Legion</p>
+                                <p class="text-xs text-gray-500">25%</p>
+                            </div>
+                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                <i class="fas fa-tablet-alt text-purple-500 text-2xl mb-2"></i>
+                                <p class="text-sm font-semibold">Yoga</p>
+                                <p class="text-xs text-gray-500">10%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 竞品信息 -->
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">竞品分析</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                    <span class="text-sm font-semibold">Dell</span>
+                                </div>
+                                <span class="text-sm text-red-600">主要竞争对手</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                    <span class="text-sm font-semibold">HP</span>
+                                </div>
+                                <span class="text-sm text-yellow-600">次要竞争对手</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 客户拜访模块 -->
+        <div id="visits-content" class="hidden p-4">
+            <!-- 拜访计划日历 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-gray-800">拜访计划</h3>
+                    <div class="flex space-x-2">
+                        <button class="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600">周</button>
+                        <button class="bg-gray-100 px-3 py-2 rounded-lg text-sm">月</button>
+                        <button class="bg-gray-100 px-3 py-2 rounded-lg text-sm">季度</button>
+                    </div>
+                </div>
+
+                <!-- 简化日历视图 -->
+                <div class="grid grid-cols-7 gap-1 mb-4">
+                    <div class="text-center p-2 text-sm font-semibold text-gray-500">日</div>
+                    <div class="text-center p-2 text-sm font-semibold text-gray-500">一</div>
+                    <div class="text-center p-2 text-sm font-semibold text-gray-500">二</div>
+                    <div class="text-center p-2 text-sm font-semibold text-gray-500">三</div>
+                    <div class="text-center p-2 text-sm font-semibold text-gray-500">四</div>
+                    <div class="text-center p-2 text-sm font-semibold text-gray-500">五</div>
+                    <div class="text-center p-2 text-sm font-semibold text-gray-500">六</div>
+                    
+                    <!-- 日期格子 -->
+                    <div class="text-center p-2 text-sm text-gray-400">10</div>
+                    <div class="text-center p-2 text-sm">11</div>
+                    <div class="text-center p-2 text-sm">12</div>
+                    <div class="text-center p-2 text-sm">13</div>
+                    <div class="text-center p-2 text-sm">14</div>
+                    <div class="text-center p-2 text-sm bg-blue-100 text-blue-600 rounded font-semibold">15</div>
+                    <div class="text-center p-2 text-sm">16</div>
+                    <div class="text-center p-2 text-sm">17</div>
+                    <div class="text-center p-2 text-sm bg-green-100 text-green-600 rounded">18</div>
+                    <div class="text-center p-2 text-sm bg-green-100 text-green-600 rounded">19</div>
+                    <div class="text-center p-2 text-sm">20</div>
+                    <div class="text-center p-2 text-sm bg-orange-100 text-orange-600 rounded">21</div>
+                    <div class="text-center p-2 text-sm">22</div>
+                    <div class="text-center p-2 text-sm">23</div>
+                </div>
+
+                <div class="flex items-center space-x-4 text-sm">
+                    <div class="flex items-center space-x-1">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span>今日</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span>已计划</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
+                        <span>待确认</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今日拜访计划 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-calendar-day text-blue-500 mr-2"></i>
+                    今日拜访计划
+                </h3>
+                <div class="space-y-3">
+                    <div class="border border-gray-200 rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-800">北京科技大学</h4>
+                            <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">进行中</span>
+                        </div>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-clock"></i>
+                                <span>09:00-10:30</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>海淀区学院路30号</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">拜访目的：ThinkPad批量采购谈判</p>
+                        <div class="flex space-x-2 mt-3">
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" onclick="startVisit('visit1')">
+                                开始拜访
+                            </button>
+                            <button class="bg-gray-100 px-3 py-1 rounded text-sm">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-800">中关村联想专卖店</h4>
+                            <span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded">待开始</span>
+                        </div>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-clock"></i>
+                                <span>14:00-15:30</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>海淀区中关村大街1号</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">拜访目的：新品推广培训</p>
+                        <div class="flex space-x-2 mt-3">
+                            <button class="bg-gray-300 text-gray-600 px-3 py-1 rounded text-sm" disabled>
+                                计划中
+                            </button>
+                            <button class="bg-gray-100 px-3 py-1 rounded text-sm">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 拜访统计 -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-white rounded-xl shadow-md p-4">
+                    <div class="text-center">
+                        <i class="fas fa-chart-line text-3xl text-blue-500 mb-2"></i>
+                        <p class="text-2xl font-bold text-blue-600">156</p>
+                        <p class="text-sm text-gray-500">本月拜访数</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-4">
+                    <div class="text-center">
+                        <i class="fas fa-percentage text-3xl text-green-500 mb-2"></i>
+                        <p class="text-2xl font-bold text-green-600">89%</p>
+                        <p class="text-sm text-gray-500">完成率</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 下属工作安排 -->
+            <div class="bg-white rounded-xl shadow-md p-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-users text-purple-500 mr-2"></i>
+                    团队拜访概况
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-sm">张销售</p>
+                                <p class="text-xs text-gray-500">今日拜访：2/3</p>
+                            </div>
+                        </div>
+                        <button class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs">
+                            查看轨迹
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-green-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-sm">李经理</p>
+                                <p class="text-xs text-gray-500">今日拜访：3/3</p>
+                            </div>
+                        </div>
+                        <button class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs">
+                            已完成
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 产品配置与报价模块 -->
+        <div id="config-content" class="hidden p-4">
+            <!-- 产品选择 -->
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-laptop text-blue-500 mr-2"></i>
+                    选择产品系列
+                </h3>
+                <div class="grid grid-cols-1 gap-3">
+                    <div class="product-series border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500" data-series="thinkpad" onclick="selectProductSeries('thinkpad')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-16 h-16 bg-black rounded-lg flex items-center justify-center">
+                                <i class="fas fa-laptop text-white text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-gray-800">ThinkPad系列</h4>
+                                <p class="text-sm text-gray-500">商务办公首选，经典黑色设计</p>
+                                <div class="flex space-x-2 mt-2">
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">X1 Carbon</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">T14</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">P1</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-series border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500" data-series="yoga" onclick="selectProductSeries('yoga')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-tablet-alt text-white text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-gray-800">Yoga系列</h4>
+                                <p class="text-sm text-gray-500">二合一变形本，灵活便携</p>
+                                <div class="flex space-x-2 mt-2">
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Yoga 9i</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Yoga 7i</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Yoga Slim</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-series border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500" data-series="legion" onclick="selectProductSeries('legion')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-gamepad text-white text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-gray-800">Legion系列</h4>
+                                <p class="text-sm text-gray-500">游戏专用，高性能显卡</p>
+                                <div class="flex space-x-2 mt-2">
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Legion 5</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Legion 7</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Legion Pro</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 配置器 -->
+            <div id="configurator" class="bg-white rounded-xl shadow-md p-4 mb-4 hidden">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-cogs text-orange-500 mr-2"></i>
+                    产品配置器
+                    <span id="selected-model" class="ml-2 text-sm bg-blue-100 text-blue-600 px-2 py-1 rounded"></span>
+                </h3>
+
+                <!-- CPU配置 -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-700 mb-3">处理器 (CPU)</h4>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="cpu" data-value="i5-13500H" data-price="0" onclick="selectConfig(this)">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium">Intel Core i5-13500H</p>
+                                    <p class="text-sm text-gray-500">12核心16线程，基础频率2.6GHz</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-green-600 font-semibold">标配</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="cpu" data-value="i7-13700H" data-price="1500" onclick="selectConfig(this)">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium">Intel Core i7-13700H</p>
+                                    <p class="text-sm text-gray-500">14核心20线程，基础频率2.4GHz</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-blue-600 font-semibold">+¥1,500</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="cpu" data-value="i9-13900H" data-price="3000" onclick="selectConfig(this)">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium">Intel Core i9-13900H</p>
+                                    <p class="text-sm text-gray-500">14核心20线程，基础频率2.6GHz</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-purple-600 font-semibold">+¥3,000</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 内存配置 -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-700 mb-3">内存 (RAM)</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="ram" data-value="8GB" data-price="0" onclick="selectConfig(this)">
+                            <div class="text-center">
+                                <p class="font-medium">8GB DDR5</p>
+                                <p class="text-sm text-green-600 font-semibold">标配</p>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="ram" data-value="16GB" data-price="800" onclick="selectConfig(this)">
+                            <div class="text-center">
+                                <p class="font-medium">16GB DDR5</p>
+                                <p class="text-sm text-blue-600 font-semibold">+¥800</p>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="ram" data-value="32GB" data-price="2000" onclick="selectConfig(this)">
+                            <div class="text-center">
+                                <p class="font-medium">32GB DDR5</p>
+                                <p class="text-sm text-purple-600 font-semibold">+¥2,000</p>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="ram" data-value="64GB" data-price="4500" onclick="selectConfig(this)">
+                            <div class="text-center">
+                                <p class="font-medium">64GB DDR5</p>
+                                <p class="text-sm text-red-600 font-semibold">+¥4,500</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 存储配置 -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-700 mb-3">存储 (SSD)</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="storage" data-value="256GB" data-price="0" onclick="selectConfig(this)">
+                            <div class="text-center">
+                                <p class="font-medium">256GB SSD</p>
+                                <p class="text-sm text-green-600 font-semibold">标配</p>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="storage" data-value="512GB" data-price="600" onclick="selectConfig(this)">
+                            <div class="text-center">
+                                <p class="font-medium">512GB SSD</p>
+                                <p class="text-sm text-blue-600 font-semibold">+¥600</p>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="storage" data-value="1TB" data-price="1200" onclick="selectConfig(this)">
+                            <div class="text-center">
+                                <p class="font-medium">1TB SSD</p>
+                                <p class="text-sm text-purple-600 font-semibold">+¥1,200</p>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="storage" data-value="2TB" data-price="2800" onclick="selectConfig(this)">
+                            <div class="text-center">
+                                <p class="font-medium">2TB SSD</p>
+                                <p class="text-sm text-red-600 font-semibold">+¥2,800</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作系统 -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-700 mb-3">操作系统</h4>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="os" data-value="Windows 11" data-price="0" onclick="selectConfig(this)">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-windows text-blue-500 text-xl"></i>
+                                    <div>
+                                        <p class="font-medium">Windows 11 专业版</p>
+                                        <p class="text-sm text-gray-500">预装正版系统</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-green-600 font-semibold">标配</p>
+                            </div>
+                        </div>
+                        <div class="config-option p-3 border border-gray-200 rounded-lg cursor-pointer" data-option="os" data-value="Linux" data-price="-500" onclick="selectConfig(this)">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-linux text-gray-700 text-xl"></i>
+                                    <div>
+                                        <p class="font-medium">Ubuntu Linux</p>
+                                        <p class="text-sm text-gray-500">开源免费系统</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-orange-600 font-semibold">-¥500</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 价格展示 -->
+            <div id="pricing-card" class="pricing-card text-white rounded-xl shadow-md p-4 mb-4 hidden">
+                <h3 class="font-bold mb-4 flex items-center">
+                    <i class="fas fa-calculator mr-2"></i>
+                    实时报价
+                </h3>
+                <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span>基础价格</span>
+                        <span id="base-price">¥8,999</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span>配置升级</span>
+                        <span id="upgrade-price">¥0</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span>折扣优惠</span>
+                        <span id="discount-price" class="text-green-300">-¥0</span>
+                    </div>
+                    <hr class="border-white border-opacity-30 my-3">
+                    <div class="flex items-center justify-between text-xl font-bold">
+                        <span>总价格</span>
+                        <span id="total-price">¥8,999</span>
+                    </div>
+                </div>
+                <div class="mt-4 space-y-2">
+                    <button class="w-full bg-white text-purple-600 font-bold py-3 rounded-lg hover:bg-gray-100" onclick="generateQuote()">
+                        生成报价单
+                    </button>
+                    <button class="w-full bg-white bg-opacity-20 text-white font-bold py-3 rounded-lg hover:bg-white hover:bg-opacity-30" onclick="saveConfiguration()">
+                        保存配置
+                    </button>
+                </div>
+            </div>
+
+            <!-- 促销活动 -->
+            <div class="bg-white rounded-xl shadow-md p-4">
+                <h3 class="font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-gift text-red-500 mr-2"></i>
+                    当前促销活动
+                </h3>
+                <div class="space-y-3">
+                    <div class="border border-red-200 bg-red-50 rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-red-800">教育优惠</h4>
+                            <span class="bg-red-500 text-white px-2 py-1 rounded text-xs">9折</span>
+                        </div>
+                        <p class="text-sm text-red-600">面向在校学生及教育工作者，凭证件享受9折优惠</p>
+                    </div>
+                    <div class="border border-blue-200 bg-blue-50 rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-blue-800">以旧换新</h4>
+                            <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs">最高抵扣¥2000</span>
+                        </div>
+                        <p class="text-sm text-blue-600">旧电脑回收抵扣，根据设备状况享受不同额度折扣</p>
+                    </div>
+                    <div class="border border-green-200 bg-green-50 rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-green-800">配件套装</h4>
+                            <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">套装优惠</span>
+                        </div>
+                        <p class="text-sm text-green-600">购买笔记本+鼠标+背包套装，享受额外95折优惠</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航栏 -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+        <div class="flex items-center justify-around py-2">
+            <button class="nav-item flex flex-col items-center py-2 px-3" data-tab="dashboard" onclick="switchTab('dashboard')">
+                <i class="fas fa-home text-xl mb-1 text-blue-500"></i>
+                <span class="text-xs text-blue-500">首页</span>
+            </button>
+            <button class="nav-item flex flex-col items-center py-2 px-3" data-tab="checkin" onclick="switchTab('checkin')">
+                <i class="fas fa-clock text-xl mb-1 text-gray-400"></i>
+                <span class="text-xs text-gray-400">打卡</span>
+            </button>
+            <button class="nav-item flex flex-col items-center py-2 px-3" data-tab="users" onclick="switchTab('users')">
+                <i class="fas fa-users text-xl mb-1 text-gray-400"></i>
+                <span class="text-xs text-gray-400">用户</span>
+            </button>
+            <button class="nav-item flex flex-col items-center py-2 px-3" data-tab="visits" onclick="switchTab('visits')">
+                <i class="fas fa-map-marker-alt text-xl mb-1 text-gray-400"></i>
+                <span class="text-xs text-gray-400">拜访</span>
+            </button>
+            <button class="nav-item flex flex-col items-center py-2 px-3" data-tab="config" onclick="switchTab('config')">
+                <i class="fas fa-cogs text-xl mb-1 text-gray-400"></i>
+                <span class="text-xs text-gray-400">配置</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 模态框 -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50" onclick="closeModal()">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6" onclick="event.stopPropagation()">
+                <div id="modal-content">
+                    <!-- 模态框内容将通过JavaScript插入 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentConfig = {
+            series: '',
+            model: '',
+            cpu: '',
+            ram: '',
+            storage: '',
+            os: '',
+            basePrice: 0,
+            upgradePrice: 0,
+            discountPrice: 0
+        };
+
+        let baseProducts = {
+            'thinkpad': { name: 'ThinkPad X1 Carbon', basePrice: 9999 },
+            'yoga': { name: 'Yoga 9i', basePrice: 8999 },
+            'legion': { name: 'Legion 5', basePrice: 7999 }
+        };
+
+        // 页面切换功能
+        function switchTab(tab) {
+            // 隐藏所有内容区域
+            const contents = ['dashboard', 'checkin-content', 'users-content', 'visits-content', 'config-content'];
+            contents.forEach(content => {
+                document.getElementById(content).classList.add('hidden');
+            });
+            
+            // 显示选中的内容区域
+            if (tab === 'dashboard') {
+                document.getElementById('dashboard').classList.remove('hidden');
+            } else {
+                document.getElementById(tab + '-content').classList.remove('hidden');
+            }
+            
+            // 更新导航栏样式
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.querySelector('i').className = item.querySelector('i').className.replace('text-blue-500', 'text-gray-400');
+                item.querySelector('span').className = item.querySelector('span').className.replace('text-blue-500', 'text-gray-400');
+            });
+            
+            const activeTab = document.querySelector(`[data-tab="${tab}"]`);
+            if (activeTab) {
+                activeTab.querySelector('i').className = activeTab.querySelector('i').className.replace('text-gray-400', 'text-blue-500');
+                activeTab.querySelector('span').className = activeTab.querySelector('span').className.replace('text-gray-400', 'text-blue-500');
+            }
+
+            // 初始化特定页面的内容
+            if (tab === 'users') {
+                initCustomer360Chart();
+            }
+        }
+
+        // 用户管理标签切换
+        function switchUserTab(tab) {
+            // 隐藏所有用户标签内容
+            document.querySelectorAll('.user-tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tab + '-tab').classList.remove('hidden');
+            
+            // 更新标签样式
+            document.querySelectorAll('.user-tab').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('bg-gray-100');
+            });
+            
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('tab-active');
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('bg-gray-100');
+
+            // 如果切换到客户360页面，初始化图表
+            if (tab === 'customer360') {
+                setTimeout(initCustomer360Chart, 100);
+            }
+        }
+
+        // 打卡功能
+        function checkIn() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            showModal(`
+                <div class="text-center">
+                    <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">签到成功</h3>
+                    <p class="text-gray-600 mb-4">签到时间：${time}</p>
+                    <p class="text-sm text-gray-500">位置：北京市朝阳区建国门外大街</p>
+                </div>
+            `);
+        }
+
+        function checkOut() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            showModal(`
+                <div class="text-center">
+                    <i class="fas fa-sign-out-alt text-6xl text-red-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">签退成功</h3>
+                    <p class="text-gray-600 mb-4">签退时间：${time}</p>
+                    <p class="text-sm text-gray-500">今日工作时长：8小时30分钟</p>
+                </div>
+            `);
+        }
+
+        // 拍照功能
+        function takePicture() {
+            showModal(`
+                <div class="text-center">
+                    <i class="fas fa-camera text-6xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">打开相机</h3>
+                    <p class="text-gray-600 mb-4">请将相机对准自己并拍摄照片</p>
+                    <p class="text-sm text-gray-500">注意：仅支持实时拍摄，不可上传本地照片</p>
+                    <button class="bg-blue-500 text-white px-6 py-2 rounded-lg mt-4 hover:bg-blue-600" onclick="closeModal()">
+                        确定
+                    </button>
+                </div>
+            `);
+        }
+
+        // 刷新位置
+        function refreshLocation() {
+            showModal(`
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin text-6xl text-purple-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">正在定位...</h3>
+                    <p class="text-gray-600">获取高精度GPS位置信息</p>
+                </div>
+            `);
+            setTimeout(() => {
+                closeModal();
+                showModal(`
+                    <div class="text-center">
+                        <i class="fas fa-map-marker-alt text-6xl text-green-500 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">定位成功</h3>
+                        <p class="text-gray-600 mb-4">北京市朝阳区建国门外大街1号</p>
+                        <p class="text-sm text-gray-500">精度：±5米</p>
+                        <button class="bg-green-500 text-white px-6 py-2 rounded-lg mt-4 hover:bg-green-600" onclick="closeModal()">
+                            确定
+                        </button>
+                    </div>
+                `);
+            }, 2000);
+        }
+
+        // 产品系列选择
+        function selectProductSeries(series) {
+            // 重置之前的选择
+            document.querySelectorAll('.product-series').forEach(el => {
+                el.classList.remove('border-blue-500', 'bg-blue-50');
+                el.classList.add('border-gray-200');
+            });
+            
+            // 高亮选中的系列
+            const selectedElement = document.querySelector(`[data-series="${series}"]`);
+            selectedElement.classList.add('border-blue-500', 'bg-blue-50');
+            selectedElement.classList.remove('border-gray-200');
+            
+            // 更新配置
+            currentConfig.series = series;
+            currentConfig.model = baseProducts[series].name;
+            currentConfig.basePrice = baseProducts[series].basePrice;
+            
+            // 显示配置器
+            document.getElementById('configurator').classList.remove('hidden');
+            document.getElementById('pricing-card').classList.remove('hidden');
+            
+            // 更新模型显示
+            document.getElementById('selected-model').textContent = currentConfig.model;
+            
+            // 重置配置选择
+            resetConfiguration();
+            updatePricing();
+        }
+
+        // 配置选择
+        function selectConfig(element) {
+            const option = element.dataset.option;
+            const value = element.dataset.value;
+            const price = parseInt(element.dataset.price);
+            
+            // 移除同类配置的选中状态
+            document.querySelectorAll(`[data-option="${option}"]`).forEach(el => {
+                el.classList.remove('border-blue-500', 'bg-blue-50');
+                el.classList.add('border-gray-200');
+            });
+            
+            // 添加当前选择的高亮
+            element.classList.add('border-blue-500', 'bg-blue-50');
+            element.classList.remove('border-gray-200');
+            
+            // 更新配置
+            currentConfig[option] = value;
+            
+            // 重新计算升级价格
+            calculateUpgradePrice();
+            updatePricing();
+        }
+
+        // 计算升级价格
+        function calculateUpgradePrice() {
+            let upgradePrice = 0;
+            
+            document.querySelectorAll('.config-option.border-blue-500').forEach(el => {
+                const price = parseInt(el.dataset.price);
+                upgradePrice += price;
+            });
+            
+            currentConfig.upgradePrice = upgradePrice;
+        }
+
+        // 更新价格显示
+        function updatePricing() {
+            document.getElementById('base-price').textContent = `¥${currentConfig.basePrice.toLocaleString()}`;
+            document.getElementById('upgrade-price').textContent = `¥${currentConfig.upgradePrice.toLocaleString()}`;
+            document.getElementById('discount-price').textContent = `-¥${currentConfig.discountPrice.toLocaleString()}`;
+            
+            const totalPrice = currentConfig.basePrice + currentConfig.upgradePrice - currentConfig.discountPrice;
+            document.getElementById('total-price').textContent = `¥${totalPrice.toLocaleString()}`;
+        }
+
+        // 重置配置
+        function resetConfiguration() {
+            currentConfig.upgradePrice = 0;
+            currentConfig.discountPrice = 0;
+            
+            // 移除所有配置选择的高亮
+            document.querySelectorAll('.config-option').forEach(el => {
+                el.classList.remove('border-blue-500', 'bg-blue-50');
+                el.classList.add('border-gray-200');
+            });
+            
+            // 默认选择标配选项
+            document.querySelectorAll('[data-price="0"]').forEach(el => {
+                el.classList.add('border-blue-500', 'bg-blue-50');
+                el.classList.remove('border-gray-200');
+            });
+        }
+
+        // 生成报价单
+        function generateQuote() {
+            const totalPrice = currentConfig.basePrice + currentConfig.upgradePrice - currentConfig.discountPrice;
+            showModal(`
+                <div class="text-center">
+                    <i class="fas fa-file-invoice-dollar text-6xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">报价单已生成</h3>
+                    <div class="text-left bg-gray-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold mb-2">${currentConfig.model}</p>
+                        <p class="text-sm text-gray-600 mb-1">总价：¥${totalPrice.toLocaleString()}</p>
+                        <p class="text-sm text-gray-600 mb-1">有效期：30天</p>
+                        <p class="text-sm text-gray-600">联系人：销售代表</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600" onclick="closeModal()">
+                            预览PDF
+                        </button>
+                        <button class="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600" onclick="closeModal()">
+                            发送客户
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+
+        // 保存配置
+        function saveConfiguration() {
+            showModal(`
+                <div class="text-center">
+                    <i class="fas fa-save text-6xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">配置已保存</h3>
+                    <p class="text-gray-600 mb-4">配置已保存到我的收藏夹</p>
+                    <button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600" onclick="closeModal()">
+                        确定
+                    </button>
+                </div>
+            `);
+        }
+
+        // 开始拜访
+        function startVisit(visitId) {
+            showModal(`
+                <div class="text-center">
+                    <i class="fas fa-play-circle text-6xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">开始拜访</h3>
+                    <p class="text-gray-600 mb-4">已开启拜访记录，系统将跟踪您的拜访进度</p>
+                    <div class="flex space-x-2">
+                        <button class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600" onclick="closeModal()">
+                            确定
+                        </button>
+                        <button class="flex-1 bg-gray-300 text-gray-600 py-2 rounded-lg" onclick="closeModal()">
+                            取消
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+
+        // 显示经销商详情
+        function showDealerDetail(dealerId) {
+            showModal(`
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">经销商详情</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-building text-blue-500"></i>
+                            <div>
+                                <p class="font-semibold">北京联想授权经销商</p>
+                                <p class="text-sm text-gray-500">等级：金牌经销商</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-map-marker-alt text-red-500"></i>
+                            <p class="text-sm">北京市朝阳区建国门外大街1号</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-phone text-green-500"></i>
+                            <p class="text-sm">010-12345678</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-chart-line text-purple-500"></i>
+                            <p class="text-sm">月销售额：¥2,580,000</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2 mt-6">
+                        <button class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600" onclick="closeModal()">
+                            发起拜访
+                        </button>
+                        <button class="flex-1 bg-gray-300 text-gray-600 py-2 rounded-lg" onclick="closeModal()">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+
+        // 新增门店
+        function addNewStore() {
+            showModal(`
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">新增门店</h3>
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">门店名称</label>
+                            <input type="text" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="请输入门店名称">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">门店地址</label>
+                            <input type="text" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="请输入门店地址">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">店长姓名</label>
+                            <input type="text" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="请输入店长姓名">
+                        </div>
+                        <div class="flex space-x-2 mt-6">
+                            <button type="button" class="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600" onclick="closeModal()">
+                                提交审批
+                            </button>
+                            <button type="button" class="flex-1 bg-gray-300 text-gray-600 py-2 rounded-lg" onclick="closeModal()">
+                                取消
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `);
+        }
+
+        // 切换视图模式
+        function switchViewMode(mode) {
+            document.querySelectorAll('.view-mode-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-500', 'text-white');
+                btn.classList.add('bg-gray-100');
+            });
+            
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('bg-blue-500', 'text-white');
+            document.querySelector(`[data-mode="${mode}"]`).classList.remove('bg-gray-100');
+            
+            // 这里可以添加不同视图模式的切换逻辑
+            if (mode === 'map') {
+                showModal(`
+                    <div class="text-center">
+                        <i class="fas fa-map text-6xl text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">地图模式</h3>
+                        <p class="text-gray-600 mb-4">正在加载地图视图...</p>
+                        <button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600" onclick="closeModal()">
+                            确定
+                        </button>
+                    </div>
+                `);
+            }
+        }
+
+        // 初始化客户360图表
+        function initCustomer360Chart() {
+            const ctx = document.getElementById('salesChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [{
+                        label: '销售额 (万元)',
+                        data: [120, 190, 300, 250, 280, 350],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 显示通知
+        function showNotifications() {
+            showModal(`
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-bell text-blue-500 mr-2"></i>
+                        系统通知
+                    </h3>
+                    <div class="space-y-3 max-h-80 overflow-y-auto">
+                        <div class="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                            <p class="font-semibold text-sm">新的拜访任务</p>
+                            <p class="text-xs text-gray-600 mt-1">您有3个新的拜访任务待处理</p>
+                            <p class="text-xs text-gray-500 mt-1">2小时前</p>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
+                            <p class="font-semibold text-sm">报价审批通过</p>
+                            <p class="text-xs text-gray-600 mt-1">ThinkPad X1 Carbon报价已获得经理审批</p>
+                            <p class="text-xs text-gray-500 mt-1">4小时前</p>
+                        </div>
+                        <div class="p-3 bg-orange-50 rounded-lg border-l-4 border-orange-500">
+                            <p class="font-semibold text-sm">系统升级通知</p>
+                            <p class="text-xs text-gray-600 mt-1">系统将于今晚22:00-24:00进行升级维护</p>
+                            <p class="text-xs text-gray-500 mt-1">1天前</p>
+                        </div>
+                    </div>
+                    <button class="w-full bg-blue-500 text-white py-2 rounded-lg mt-4 hover:bg-blue-600" onclick="closeModal()">
+                        确定
+                    </button>
+                </div>
+            `);
+        }
+
+        // 模态框功能
+        function showModal(content) {
+            document.getElementById('modal-content').innerHTML = content;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // 实时时间更新
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const timeElement = document.getElementById('current-time');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 启动实时时间更新
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // 默认显示首页
+            switchTab('dashboard');
+        });
+    </script>
+</body>
+</html>
