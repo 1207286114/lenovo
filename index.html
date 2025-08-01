@@ -1495,8 +1495,8 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-2">开始拜访</h3>
                     <p class="text-gray-600 mb-4">已开启拜访记录，系统将跟踪您的拜访进度</p>
                     <div class="flex space-x-2">
-                        <button class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600" onclick="closeModal()">
-                            确定
+                        <button class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600" onclick="openAmapHome()">
+                            签到
                         </button>
                         <button class="flex-1 bg-gray-300 text-gray-600 py-2 rounded-lg" onclick="closeModal()">
                             取消
@@ -1505,6 +1505,10 @@
                 </div>
             `);
         }
+        function openAmapHome() {
+    closeModal(); // 可选：关闭弹窗
+    window.open('https://www.amap.com', '_blank');
+}
 
         // 显示经销商详情
         function showDealerDetail(dealerId) {
