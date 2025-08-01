@@ -443,7 +443,71 @@
                             </div>
                         </div>
                     </div>
+                    
                 </div>
+                <!-- 售后门店模块 -->
+<div class="bg-white rounded-xl shadow-md p-4 mb-4">
+  <h3 class="font-bold text-gray-800 mb-4">售后门店</h3>
+  <div class="space-y-3">
+    
+    <div class="p-3 border border-gray-200 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="font-semibold">联想售后服务中心（北京朝阳）</h4>
+          <p class="text-sm text-gray-500">地址：北京市朝阳区建国路88号SOHO大厦</p>
+          <div class="flex items-center space-x-4 mt-1">
+            <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">等级：A级</span>
+            <span class="text-xs text-gray-500">电话：010-88886666</span>
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <button class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="viewStoreDetail('北京朝阳')">查看</button>
+          <button class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600" onclick="editStore('北京朝阳')">编辑</button>
+          <button class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600" onclick="disableStore('北京朝阳')">停用</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-3 border border-gray-200 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="font-semibold">联想授权维修点（广州天河）</h4>
+          <p class="text-sm text-gray-500">地址：广州市天河区体育西路123号</p>
+          <div class="flex items-center space-x-4 mt-1">
+            <span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded">等级：B级</span>
+            <span class="text-xs text-gray-500">电话：020-12345678</span>
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <button class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="viewStoreDetail('广州天河')">查看</button>
+          <button class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600" onclick="editStore('广州天河')">编辑</button>
+          <button class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600" onclick="disableStore('广州天河')">停用</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-3 border border-gray-200 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="font-semibold">ThinkPad售后中心（上海浦东）</h4>
+          <p class="text-sm text-gray-500">地址：上海市浦东新区张江高科软件园路66号</p>
+          <div class="flex items-center space-x-4 mt-1">
+            <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">等级：A级</span>
+            <span class="text-xs text-gray-500">电话：021-55667788</span>
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <button class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="viewStoreDetail('上海浦东')">查看</button>
+          <button class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600" onclick="editStore('上海浦东')">编辑</button>
+          <button class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600" onclick="disableStore('上海浦东')">停用</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+                
             </div>
 
             <!-- 客户360 -->
@@ -693,9 +757,11 @@
                                 <p class="text-xs text-gray-500">今日拜访：2/3</p>
                             </div>
                         </div>
-                        <button class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs">
+                            <button
+                            class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs"
+                            onclick="showTrack('shop/track.png')">
                             查看轨迹
-                        </button>
+                            </button>
                     </div>
                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div class="flex items-center space-x-3">
@@ -1126,6 +1192,7 @@
                 initCustomer360Chart();
             }
         }
+        
 
         // 用户管理标签切换
         function switchUserTab(tab) {
@@ -1161,7 +1228,7 @@
                     <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
                     <h3 class="text-xl font-bold text-gray-800 mb-2">签到成功</h3>
                     <p class="text-gray-600 mb-4">签到时间：${time}</p>
-                    <p class="text-sm text-gray-500">位置：北京市朝阳区建国门外大街</p>
+                    <p class="text-sm text-gray-500">位置：陕西省西安市长安区汉得信息大楼</p>
                 </div>
             `);
         }
@@ -1178,45 +1245,113 @@
                 </div>
             `);
         }
-
-        // 拍照功能
-        function takePicture() {
-            showModal(`
-                <div class="text-center">
-                    <i class="fas fa-camera text-6xl text-blue-500 mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">打开相机</h3>
-                    <p class="text-gray-600 mb-4">请将相机对准自己并拍摄照片</p>
-                    <p class="text-sm text-gray-500">注意：仅支持实时拍摄，不可上传本地照片</p>
-                    <button class="bg-blue-500 text-white px-6 py-2 rounded-lg mt-4 hover:bg-blue-600" onclick="closeModal()">
-                        确定
+        function showTrack(imgSrc) {
+                showModal(`
+                    <div class="text-center">
+                    <img src="${imgSrc}" alt="拜访轨迹" class="w-full rounded-lg mb-4" />
+                    <h3 class="text-xl font-bold text-gray-800">拜访轨迹</h3>
+                    <button
+                        class="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+                        onclick="closeModal()">
+                        关闭
                     </button>
-                </div>
-            `);
+                    </div>
+                `);
+                }
+
+        function takePicture() {
+        showModal(`
+            <div class="text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">拍照打卡</h3>
+            <video id="cameraPreview" autoplay playsinline class="w-full max-w-md mx-auto rounded-lg border"></video>
+            <div class="mt-4 space-x-4">
+                <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" onclick="capturePhoto()">拍照</button>
+                <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400" onclick="closeModal()">关闭</button>
+            </div>
+            <canvas id="photoCanvas" class="hidden mt-4 mx-auto border rounded-lg"></canvas>
+            </div>
+        `);
+
+        setTimeout(() => {
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                const video = document.getElementById('cameraPreview');
+                video.srcObject = stream;
+                window._cameraStream = stream;
+            })
+            .catch(error => {
+                alert("摄像头访问失败：" + error.message);
+                closeModal();
+            });
+        }, 100);
+        }
+        function capturePhoto() {
+        const video = document.getElementById('cameraPreview');
+        const canvas = document.getElementById('photoCanvas');
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.classList.remove('hidden');
+
+        if (window._cameraStream) {
+            window._cameraStream.getTracks().forEach(track => track.stop());
+        }
         }
 
-        // 刷新位置
         function refreshLocation() {
-            showModal(`
-                <div class="text-center">
-                    <i class="fas fa-spinner fa-spin text-6xl text-purple-500 mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">正在定位...</h3>
-                    <p class="text-gray-600">获取高精度GPS位置信息</p>
-                </div>
-            `);
+        showModal(`
+            <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-6xl text-purple-500 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">正在定位...</h3>
+            <p class="text-gray-600">获取高精度GPS位置信息</p>
+            </div>
+        `);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+            const lat = position.coords.latitude.toFixed(6);
+            const lng = position.coords.longitude.toFixed(6);
+            const accuracy = position.coords.accuracy.toFixed(1); // 米
+
+            // 可选：你也可以在这里调用地图 API 反查地址（需要外部服务）
+
             setTimeout(() => {
                 closeModal();
                 showModal(`
-                    <div class="text-center">
-                        <i class="fas fa-map-marker-alt text-6xl text-green-500 mb-4"></i>
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">定位成功</h3>
-                        <p class="text-gray-600 mb-4">北京市朝阳区建国门外大街1号</p>
-                        <p class="text-sm text-gray-500">精度：±5米</p>
-                        <button class="bg-green-500 text-white px-6 py-2 rounded-lg mt-4 hover:bg-green-600" onclick="closeModal()">
-                            确定
-                        </button>
-                    </div>
+                <div class="text-center">
+                    <i class="fas fa-map-marker-alt text-6xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">定位成功</h3>
+                    <p class="text-gray-600 mb-2">经度：${lng}</p>
+                    <p class="text-gray-600 mb-2">纬度：${lat}</p>
+                    <p class="text-sm text-gray-500">精度：±${accuracy} 米</p>
+                    <button class="bg-green-500 text-white px-6 py-2 rounded-lg mt-4 hover:bg-green-600" onclick="closeModal()">
+                    确定
+                    </button>
+                </div>
                 `);
-            }, 2000);
+            }, 500); // 模拟加载延迟
+            },
+            (error) => {
+            closeModal();
+            showModal(`
+                <div class="text-center">
+                <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
+                <h3 class="text-xl font-bold text-red-600 mb-2">定位失败</h3>
+                <p class="text-gray-600 mb-2">${error.message}</p>
+                <p class="text-sm text-gray-400">请检查是否允许定位权限</p>
+                <button class="bg-red-500 text-white px-6 py-2 rounded-lg mt-4 hover:bg-red-600" onclick="closeModal()">
+                    关闭
+                </button>
+                </div>
+            `);
+            },
+            {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+            }
+        );
         }
 
         // 产品系列选择
@@ -1482,24 +1617,24 @@ function addNewStore() {
                 btn.classList.remove('bg-blue-500', 'text-white');
                 btn.classList.add('bg-gray-100');
             });
-            
+
             document.querySelector(`[data-mode="${mode}"]`).classList.add('bg-blue-500', 'text-white');
             document.querySelector(`[data-mode="${mode}"]`).classList.remove('bg-gray-100');
-            
-            // 这里可以添加不同视图模式的切换逻辑
+
             if (mode === 'map') {
                 showModal(`
-                    <div class="text-center">
-                        <i class="fas fa-map text-6xl text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">地图模式</h3>
-                        <p class="text-gray-600 mb-4">正在加载地图视图...</p>
-                        <button class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600" onclick="closeModal()">
-                            确定
-                        </button>
+                    <div class="w-full max-w-3xl h-[500px] relative">
+                        <iframe
+                            src="https://www.amap.com/"
+                            class="w-full h-full rounded-xl border"
+                            frameborder="0"
+                        ></iframe>
+                        <button class="absolute top-2 right-2 bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700" onclick="closeModal()">关闭</button>
                     </div>
                 `);
             }
         }
+
 
         // 初始化客户360图表
         function initCustomer360Chart() {
@@ -1576,6 +1711,9 @@ function addNewStore() {
 
         function closeModal() {
             document.getElementById('modal').classList.add('hidden');
+             if (window._cameraStream) {
+                window._cameraStream.getTracks().forEach(track => track.stop());
+            }
         }
 
         // 实时时间更新
